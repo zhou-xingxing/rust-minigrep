@@ -10,7 +10,7 @@ pub struct Params {
 }
 
 impl Params {
-    pub fn build(args: &Vec<String>) -> Result<Params, &str> {
+    pub fn build(args: &[String]) -> Result<Params, &str> {
         let mut query = "";
         let mut file_path = "";
         let mut ignore_case = false;
@@ -57,24 +57,20 @@ pub fn run(params: &Params) -> Result<(), Box<dyn Error>> {
 }
 
 pub fn search<'a>(query: &'a str, contents: &'a str) -> Vec<(usize, &'a str)> {
-    let mut results = vec![];
-    for (index, line) in contents.lines().enumerate() {
-        if line.contains(query) {
-            results.push((index, line));
-        }
-    }
-    results
+    contents
+        .lines()
+        .enumerate()
+        .filter(|(_, line)| line.contains(query))
+        .collect()
 }
 
 pub fn search_case_insensitive<'a>(query: &'a str, contents: &'a str) -> Vec<(usize, &'a str)> {
-    let mut results = vec![];
     let query = query.to_lowercase();
-    for (index, line) in contents.lines().enumerate() {
-        if line.to_lowercase().contains(&query) {
-            results.push((index, line));
-        }
-    }
-    results
+    contents
+        .lines()
+        .enumerate()
+        .filter(|(_, line)| line.to_lowercase().contains(&query))
+        .collect()
 }
 
 #[cfg(test)]
